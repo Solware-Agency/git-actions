@@ -2,9 +2,8 @@ name: Reusable Discord Notifier
 
 on:
   workflow_call:
-    secrets:
-      DISCORD_WEBHOOK_URL:
-        required: true
+    # Ya no necesitamos definir 'secrets:' aquí si usamos 'inherit'
+    # pero es buena práctica dejarlo así para que el job sepa qué usar.
 
 jobs:
   notify:
@@ -13,8 +12,8 @@ jobs:
       - name: Discord Notification
         uses: sarisia/actions-status-discord@v1
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          # El 'status' lo tomamos del workflow que nos llama
+          # IMPORTANTE: Aquí debe decir el nombre del SECRETO de la ORG
+          webhook: ${{ secrets.GLOBAL_DISCORD_WEBHOOK }}
           status: ${{ job.status }}
           title: "📢 Cambio en: ${{ github.repository }}"
           description: |
@@ -23,4 +22,3 @@ jobs:
             **Mensaje:** ${{ github.event.head_commit.message || github.event.pull_request.title }}
           url: ${{ github.event.html_url || github.event.pull_request.html_url }}
           color: 0x5865F2
-          username: GitHub Central Bot
